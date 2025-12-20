@@ -1,7 +1,6 @@
 /* eslint-disable react-native/no-inline-styles */
 import React, {useEffect, useRef, useState} from 'react';
 import {WebView, WebViewNavigation} from 'react-native-webview';
-import FullScreenAd from './components/ads/AppOpenAd';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 
 import {
@@ -20,7 +19,6 @@ import SplashScreen from 'react-native-splash-screen';
 import PullToReload from './components/ui/PullToReload';
 import useWebFunctions from './hooks/useWebFunctions';
 import {LogLevel, OneSignal} from 'react-native-onesignal';
-import changeNavigationBarColor from 'react-native-navigation-bar-color';
 import {SafeAreaProvider, SafeAreaView} from 'react-native-safe-area-context';
 import KeepAwake from 'react-native-keep-awake';
 
@@ -35,13 +33,10 @@ const AppContent: React.FC<{}> = () => {
 
   const webViewRef = useRef<WebView | null>(null);
   const [customUserAgent, setCustomUserAgent] = useState<string | null>(null);
-  const [webUrl, setWebUrl] = useState<string>('https://www.c14.co.il/');
+  const [webUrl, setWebUrl] = useState<string>('https://www.okn.co.il/');
   const [canGoBack, setCanGoBack] = useState<boolean>(false);
   const [toastExit, setToastExit] = useState<boolean>(false);
   const [forceUpdate, setForceUpdate] = useState(0);
-  const [statusBarColor, setStatusBarColor] = useState<string>('#d21d23');
-  const [navigationBarColor, setNavigationBarColor] =
-    useState<string>('#ffffff');
   const appState = useRef<AppStateStatus>(AppState.currentState);
   const lastBackgroundTime = useRef<number | null>(null);
 
@@ -52,17 +47,13 @@ const AppContent: React.FC<{}> = () => {
     showFullScreenAd,
     setShowFullScreenAd,
     appInFullscreen,
-    adTargetingIDX,
-    adUnit,
   } = useWebFunctions();
 
   const handleExternalLink = (request: any) => {
     if (Platform.OS === 'android') {
       const isInternalLink =
-        request.url.startsWith('https://www.c14.co.il/') ||
-        request.url.startsWith('https://c14.co.il') ||
-        request.url.startsWith('https://podcast.c14.co.il') ||
-        request.url.startsWith('https://www.now14.co.il');
+        request.url.startsWith('https://www.okn.co.il/') ||
+        request.url.startsWith('https://okn.co.il');
       if (!isInternalLink) {
         setShowFullScreenAd(false);
         Linking.openURL(request.url);
@@ -73,17 +64,6 @@ const AppContent: React.FC<{}> = () => {
   };
 
   const handleNavigationStateChange = (navState: WebViewNavigation) => {
-    if (navState.url === 'https://www.c14.co.il/live') {
-      setNavigationBarColor('#0c0e55');
-      setStatusBarColor('#0c0e55');
-    } else if (navState.url.startsWith('https://podcast.c14.co.il/')) {
-      setNavigationBarColor('#1b1a1f');
-      setStatusBarColor('#1b1a1f');
-    } else {
-      setStatusBarColor('#d21d23');
-      setNavigationBarColor('#ffffff');
-    }
-
     setCanGoBack(navState.canGoBack);
   };
 
@@ -92,8 +72,8 @@ const AppContent: React.FC<{}> = () => {
       webViewRef.current?.goBack();
       return true;
     } else {
-      if (webUrl !== 'https://www.c14.co.il/') {
-        setWebUrl('https://www.c14.co.il/');
+      if (webUrl !== 'https://www.okn.co.il/') {
+        setWebUrl('https://www.okn.co.il/');
         setForceUpdate(prev => prev + 1);
         return true;
       } else if (!toastExit) {
@@ -137,7 +117,7 @@ const AppContent: React.FC<{}> = () => {
           lastBackgroundTime.current &&
           now - lastBackgroundTime.current > TIMEOUT
         ) {
-          setWebUrl('https://www.c14.co.il');
+          setWebUrl('https://www.okn.co.il');
           SplashScreen.show();
           setForceUpdate(prev => prev + 1);
         }
@@ -158,16 +138,8 @@ const AppContent: React.FC<{}> = () => {
   }, [appInFullscreen]);
 
   useEffect(() => {
-    changeNavigationBarColor(
-      navigationBarColor,
-      navigationBarColor === '#ffffff' ? true : false,
-      false,
-    );
-  }, [navigationBarColor]);
-
-  useEffect(() => {
-    StatusBar.setBackgroundColor(statusBarColor, false);
-  }, [statusBarColor]);
+    StatusBar.setBackgroundColor('#0818AC', false);
+  }, []);
 
   useEffect(() => {
     const fetchUserAgent = async () => {
@@ -195,9 +167,8 @@ const AppContent: React.FC<{}> = () => {
       lastBackgroundTime.current = Date.now();
       const url = event.url;
       if (
-        url.startsWith('https://www.c14.co.il/') ||
-        url.startsWith('https://c14.co.il') ||
-        url.startsWith('https://podcast.c14.co.il') ||
+        url.startsWith('https://www.okn.co.il/') ||
+        url.startsWith('https://okn.co.il') ||
         url.startsWith('https://www.now14.co.il')
       ) {
         setWebUrl(url);
@@ -226,7 +197,7 @@ const AppContent: React.FC<{}> = () => {
       const url =
         event.notification.launchURL ||
         event.notification.additionalData?.url ||
-        'https://www.c14.co.il/';
+        'https://www.okn.co.il/';
 
       if (url) {
         Linking.openURL(url).catch(err =>
@@ -261,7 +232,7 @@ const AppContent: React.FC<{}> = () => {
           height: insets.top,
           position: 'absolute',
           top: 0,
-          backgroundColor: statusBarColor,
+          backgroundColor: '#0818AC',
           width: '100%',
         }}
       />
@@ -270,12 +241,12 @@ const AppContent: React.FC<{}> = () => {
           height: insets.bottom,
           position: 'absolute',
           bottom: 0,
-          backgroundColor: navigationBarColor,
+          backgroundColor: '#0818AC',
           width: '100%',
         }}
       />
       <StatusBar
-        backgroundColor={statusBarColor}
+        backgroundColor="#0818AC"
         translucent={true}
         barStyle="light-content"
       />
@@ -311,15 +282,6 @@ const AppContent: React.FC<{}> = () => {
             renderLoading={() => <></>}
           />
         </PullToReload>
-      )}
-
-      {adUnit !== null && (
-        <FullScreenAd
-          show={showFullScreenAd}
-          onAdClosed={() => setShowFullScreenAd(false)}
-          targets={adTargetingIDX}
-          adUnit={adUnit}
-        />
       )}
     </SafeAreaView>
   );

@@ -24,7 +24,7 @@
         android:id="@+id/versionText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="גרסא 7.5.2" 
+        android:text="גרסא 1.0.0" 
         android:textSize="14sp"
         android:textColor="#FFFFFF"
         app:layout_constraintBottom_toBottomOf="parent"

@@ -77,13 +77,13 @@ android {
     buildToolsVersion rootProject.ext.buildToolsVersion
     compileSdk rootProject.ext.compileSdkVersion
 
-    namespace "com.gaiamobile.channel20"
+    namespace "il.co.okn"
     defaultConfig {
-        applicationId "com.gaiamobile.channel20"
+        applicationId "il.co.okn"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 2023122026
-        versionName "7.5.2"
+        versionCode 0001
+        versionName "1.0.0"
     }
     signingConfigs {
         debug {
@@ -93,10 +93,10 @@ android {
             keyPassword 'android'
         }
         release {
-            storeFile file('./certificate.keystore')
-            storePassword 'gaya2011'
-            keyAlias 'mykey'
-            keyPassword 'gaya2011'
+            storeFile file('./okn_key.jks')
+            storePassword 'eliran89'
+            keyAlias 'okn_android'
+            keyPassword 'eliran89'
         }
     }
     buildTypes {

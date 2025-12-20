@@ -1,5 +1,5 @@
 <resources>
-  <color name="splash_bg_color">#E20410</color>
+  <color name="splash_bg_color">#0818AC</color>
   <color name="status_bar_color">#000000</color>
   <color name="nav_bar_color">#eeeeee</color>
 </resources>

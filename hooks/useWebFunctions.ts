@@ -18,8 +18,6 @@ type webFunctions = {
   showFullScreenAd: boolean;
   setShowFullScreenAd: React.Dispatch<React.SetStateAction<boolean>>;
   appInFullscreen: boolean;
-  adTargetingIDX: {};
-  adUnit: {[key: string]: string} | null;
 };
 
 const useWebFunctions = (): webFunctions => {
@@ -30,11 +28,8 @@ const useWebFunctions = (): webFunctions => {
   });
   const [showFullScreenAd, setShowFullScreenAd] = useState<boolean>(false);
   const [appInFullscreen, setAppInFullscreen] = useState<boolean>(false);
-  const [adTargetingIDX, setAdTargetingIDX] = useState<{}>({});
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [forceRender, setForceRender] = useState(0);
-
-  const [adUnit, setAdunit] = useState<{[key: string]: string} | null>(null);
 
   useEffect(() => {
     setTimeout(() => {
@@ -48,29 +43,10 @@ const useWebFunctions = (): webFunctions => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  useEffect(() => {
-    (async () => {
-      const adUnitResponse = await fetch(
-        'https://www.c14.co.il/api/app-adunits',
-      );
-
-      const adUnitData = await adUnitResponse.json();
-
-      if (adUnitData && adUnitData.android) {
-        setAdunit(adUnitData.android);
-        setShowFullScreenAd(true);
-      }
-    })();
-  }, []);
-
   const shareHandler = async (url: string) => {
     await Share.share({
       message: url,
     });
-  };
-
-  const handleShowAd = () => {
-    setShowFullScreenAd(true);
   };
 
   const handleWebViewMessage = async (event: any) => {
@@ -101,12 +77,6 @@ const useWebFunctions = (): webFunctions => {
         setAppInFullscreen(payload.status);
         PipModule.setFullscreenState(payload.status);
         break;
-      case 'triggerMaavron':
-        handleShowAd();
-        break;
-      case 'setMaavaronIdxTargeting':
-        setAdTargetingIDX(payload);
-        break;
       default:
         break;
     }
@@ -128,28 +98,6 @@ const useWebFunctions = (): webFunctions => {
                 action:"ToggleNotifications",
             }));
          },
-        showNativeMaavron:()=>{
-            window.ReactNativeWebView.postMessage(JSON.stringify({
-                action:"triggerMaavron",
-            }));
-         },
-      }
-
-
-
-          const dxseg = window.localStorage.getItem(
-            "dmp-publisher-prevDefinitionsIds"
-          );
-          const dxu = window.localStorage.getItem("dmp-publisher-dmpid");
-          const permutive = window.localStorage.getItem("dmp-publisher-dmpid");
-
-
-
-        window.ReactNativeWebView.postMessage(JSON.stringify({
-              action:"setMaavaronIdxTargeting",
-               payload:{ dxu, dxseg, permutive }
-          }));
-
 
 
         document.addEventListener('fullscreenchange', function (e) {
@@ -163,9 +111,7 @@ const useWebFunctions = (): webFunctions => {
     postMsgHandler: handleWebViewMessage,
     showFullScreenAd: showFullScreenAd,
     setShowFullScreenAd: setShowFullScreenAd,
-    adTargetingIDX,
     appInFullscreen,
-    adUnit,
   };
 };
 

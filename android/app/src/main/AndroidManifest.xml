@@ -37,6 +37,14 @@
                 <category android:name="android.intent.category.BROWSABLE" />
                 <data
                     android:scheme="https"
+                    android:host="www.okn.co.il"
+                    android:pathPrefix="/" />
+                <data
+                    android:scheme="https"
+                    android:host="okn.co.il"
+                    android:pathPrefix="/" />
+                <data
+                    android:scheme="https"
                     android:host="www.now14.co.il" />
                 <data
                     android:scheme="https"

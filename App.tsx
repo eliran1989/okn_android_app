@@ -211,9 +211,20 @@ const AppContent: React.FC<{}> = () => {
         'https://www.okn.co.il/';
 
       if (url) {
-        Linking.openURL(url).catch(err =>
-          console.error('Failed to open URL:', err),
-        );
+        // Open internal links in app WebView, external in browser
+        const isInternalLink =
+          url.startsWith('https://www.okn.co.il/') ||
+          url.startsWith('https://okn.co.il') ||
+          url.startsWith('https://www.now14.co.il') ||
+          url.startsWith('https://www.c14.co.il');
+        if (isInternalLink) {
+          setWebUrl(url);
+          setForceUpdate(prev => prev + 1);
+        } else {
+          Linking.openURL(url).catch(err =>
+            console.error('Failed to open URL:', err),
+          );
+        }
       }
     };
 

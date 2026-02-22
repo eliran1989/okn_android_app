@@ -13,6 +13,7 @@ import {
   AppStateStatus,
   AppState,
   View,
+  ActivityIndicator,
 } from 'react-native';
 import DeviceInfo from 'react-native-device-info';
 import SplashScreen from 'react-native-splash-screen';
@@ -22,7 +23,7 @@ import {LogLevel, OneSignal} from 'react-native-onesignal';
 import {SafeAreaProvider, SafeAreaView} from 'react-native-safe-area-context';
 import KeepAwake from 'react-native-keep-awake';
 
-OneSignal.initialize('83e276cc-c7e8-4693-b306-d9874f2507de');
+OneSignal.initialize('7640dc11-b58e-4101-bb7c-b1e834eac313');
 OneSignal.Debug.setLogLevel(LogLevel.Verbose);
 
 const TIMEOUT = 1000 * 60 * 5;
@@ -39,6 +40,7 @@ const AppContent: React.FC<{}> = () => {
   const [forceUpdate, setForceUpdate] = useState(0);
   const appState = useRef<AppStateStatus>(AppState.currentState);
   const lastBackgroundTime = useRef<number | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(true); // Loader state
 
   const {
     jsDataToInject,
@@ -89,11 +91,11 @@ const AppContent: React.FC<{}> = () => {
     }
   }, [canGoBack, toastExit, webUrl]);
 
-  // (async () =>
-  //   console.log(await OneSignal.User.pushSubscription.getIdAsync()))();
+  (async () =>
+    console.log(await OneSignal.User.pushSubscription.getIdAsync()))();
 
-  // (async () =>
-  //   console.log(await OneSignal.User.pushSubscription.getOptedInAsync()))();
+  (async () =>
+    console.log(await OneSignal.User.pushSubscription.getOptedInAsync()))();
 
   useEffect(() => {
     const subscription = AppState.addEventListener('change', nextAppState => {
@@ -190,6 +192,15 @@ const AppContent: React.FC<{}> = () => {
     };
   }, []);
 
+  const handleLoadStart = () => {
+    setIsLoading(true); // Show loader
+  };
+
+  const handleLoadEnd = () => {
+    setIsLoading(false); // Hide loader
+    SplashScreen.hide();
+  };
+
   useEffect(() => {
     OneSignal.Notifications.requestPermission(false);
 
@@ -251,12 +262,17 @@ const AppContent: React.FC<{}> = () => {
         barStyle="light-content"
       />
 
+      {isLoading && (
+        <View style={styles.loaderContainer}>
+          <ActivityIndicator size="large" color="#ffffff" />
+        </View>
+      )}
+
       {customUserAgent && (
         <PullToReload webViewRef={webViewRef}>
           <WebView
             key={forceUpdate}
             cacheEnabled={true}
-            cacheMode="LOAD_NO_CACHE"
             domStorageEnabled={true}
             ref={ref => {
               webViewRef.current = ref;
@@ -275,11 +291,8 @@ const AppContent: React.FC<{}> = () => {
             onLoad={() => {
               webViewRef.current?.injectJavaScript(jsDataToInject);
             }}
-            onLoadStart={() => {}}
-            onLoadEnd={() => {
-              SplashScreen.hide();
-            }}
-            renderLoading={() => <></>}
+            onLoadStart={handleLoadStart} // Trigger loading state
+            onLoadEnd={handleLoadEnd} // Hide loading state
           />
         </PullToReload>
       )}
@@ -295,7 +308,17 @@ const App = () => (
 
 export default App;
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const styles = StyleSheet.create({
   container: {backgroundColor: '#fff', flex: 1},
+  loaderContainer: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#0818AC',
+    zIndex: 999999,
+  },
 });

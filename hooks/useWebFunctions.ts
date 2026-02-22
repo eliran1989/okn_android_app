@@ -59,19 +59,24 @@ const useWebFunctions = (): webFunctions => {
       case 'ToggleNotifications':
         if (appData.notifications) {
           OneSignal.User.pushSubscription.optOut();
+          OneSignal.User.pushSubscription.getOptedInAsync().then(optedIn => {
+            const data = appData;
+            data.notifications = optedIn;
+            setAppData({...data});
+            setForceRender(prev => prev + 1);
+          });
         } else {
           OneSignal.User.pushSubscription.optIn();
-          OneSignal.Notifications.requestPermission(true);
+          // requestPermission returns Promise - must await before checking status
+          OneSignal.Notifications.requestPermission(true).then(async () => {
+            const optedIn = await OneSignal.User.pushSubscription.getOptedInAsync();
+            console.log('change granted', optedIn);
+            const data = appData;
+            data.notifications = optedIn;
+            setAppData({...data});
+            setForceRender(prev => prev + 1);
+          });
         }
-
-        OneSignal.User.pushSubscription.getOptedInAsync().then(optedIn => {
-          console.log('change granted', optedIn);
-          const data = appData;
-          data.notifications = optedIn;
-          setAppData({...data});
-          setForceRender(prev => prev + 1); // Change state to force re-render
-        });
-
         break;
       case 'fullscreenChange':
         setAppInFullscreen(payload.status);
